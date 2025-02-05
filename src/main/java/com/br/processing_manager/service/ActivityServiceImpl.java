@@ -1,6 +1,7 @@
 package com.br.processing_manager.service;
 
 import com.br.processing_manager.enums.ActivityStatus;
+import com.br.processing_manager.producer.ActivityProducer;
 import com.br.processing_manager.record.ActivityRecord;
 import com.br.processing_manager.record.ProcessingRecord;
 import com.fasterxml.jackson.core.JsonProcessingException;
