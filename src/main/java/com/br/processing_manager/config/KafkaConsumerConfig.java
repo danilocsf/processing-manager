@@ -27,6 +27,9 @@ public class KafkaConsumerConfig {
     @Value("${topic.processing.group.id}")
     private String processingGroupId;
 
+    @Value("${isolation.level}")
+    private String isolationLevel;
+
     public ConsumerFactory<String, String> consumerFactory() {
         Map<String, Object> properties = kafkaProperties.buildConsumerProperties();
         properties.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG,  kafkaAddress);
@@ -34,6 +37,7 @@ public class KafkaConsumerConfig {
         properties.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         properties.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         properties.put(ConsumerConfig.ALLOW_AUTO_CREATE_TOPICS_CONFIG, false);
+        properties.put(ConsumerConfig.ISOLATION_LEVEL_CONFIG, isolationLevel);
         return new DefaultKafkaConsumerFactory<>(properties);
     }
 

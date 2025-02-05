@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.core.ProducerFactory;
+import org.springframework.kafka.transaction.KafkaTransactionManager;
 
 import java.util.Map;
 
@@ -25,6 +26,12 @@ public class KafkaProducerConfig {
     @Value("${batch.size}")
     private int batchSize;
 
+    @Value("${linger.ms}")
+    private int lingerMs;
+
+    @Value("${spring.kafka.producer.transaction-id-prefix}")
+    private String transactionalIdPrefix;
+
     @Bean
     public ProducerFactory<String, String> producerFactory() {
         Map<String, Object> properties = kafkaProperties.buildProducerProperties();
@@ -32,13 +39,20 @@ public class KafkaProducerConfig {
         properties.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
         properties.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
         properties.put(ProducerConfig.BATCH_SIZE_CONFIG, batchSize);
-        properties.put(ProducerConfig.LINGER_MS_CONFIG, 10);
+        properties.put(ProducerConfig.LINGER_MS_CONFIG, lingerMs);
+        properties.put(ProducerConfig.TRANSACTIONAL_ID_CONFIG, transactionalIdPrefix);
+        properties.put(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, true);
         return new DefaultKafkaProducerFactory(properties);
     }
 
     @Bean
     public KafkaTemplate<String, String> kafkaTemplate() {
         return new KafkaTemplate<>(producerFactory());
+    }
+
+    @Bean
+    public KafkaTransactionManager<String, String> kafkaTransactionManager() {
+        return new KafkaTransactionManager<>(producerFactory());
     }
 
 }
