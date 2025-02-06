@@ -30,11 +30,19 @@ public class KafkaTopicConfig {
     @Value("${topic.activity.partition:3}")
     private int activityPartitions;
 
-    @Value("${topic.activity.replicas:1}")
+    @Value("${topic.activity.replicas:3}")
     private int activityReplicas;
 
-    @Value("${topic.processing.replicas:1}")
+    @Value("${topic.processing.replicas:3}")
     private int processingReplicas;
+
+    @Value("${topic.processing.min.insync.replicas:1}")
+    private String processingMinInSyncReplicas;
+
+    @Value("${topic.activity.min.insync.replicas:1}")
+    private String activityMinInSyncReplicas;
+
+    private static final String MIN_INSYNC_REPLICAS = "min.insync.replicas";
 
     @Bean
     public KafkaAdmin kafkaAdmin() {
@@ -49,6 +57,7 @@ public class KafkaTopicConfig {
                 .name(processingTopic)
                 .partitions(processingPartitions)
                 .replicas(processingReplicas)
+                .configs(Map.of(MIN_INSYNC_REPLICAS, processingMinInSyncReplicas))
                 .build();
     }
 
@@ -58,6 +67,7 @@ public class KafkaTopicConfig {
                 .name(activityTopic)
                 .partitions(activityPartitions)
                 .replicas(activityReplicas)
+                .configs(Map.of(MIN_INSYNC_REPLICAS, activityMinInSyncReplicas))
                 .build();
     }
 }
