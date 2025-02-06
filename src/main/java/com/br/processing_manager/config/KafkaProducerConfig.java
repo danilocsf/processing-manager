@@ -32,6 +32,9 @@ public class KafkaProducerConfig {
     @Value("${spring.kafka.producer.transaction-id-prefix}")
     private String transactionalIdPrefix;
 
+    @Value("${producer.ack}")
+    private String ack;
+
     @Bean
     public ProducerFactory<String, String> producerFactory() {
         Map<String, Object> properties = kafkaProperties.buildProducerProperties();
@@ -42,6 +45,7 @@ public class KafkaProducerConfig {
         properties.put(ProducerConfig.LINGER_MS_CONFIG, lingerMs);
         properties.put(ProducerConfig.TRANSACTIONAL_ID_CONFIG, transactionalIdPrefix);
         properties.put(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, true);
+        properties.put(ProducerConfig.ACKS_CONFIG, ack);
         return new DefaultKafkaProducerFactory(properties);
     }
 
