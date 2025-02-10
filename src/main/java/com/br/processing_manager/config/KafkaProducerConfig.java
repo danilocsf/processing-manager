@@ -41,6 +41,9 @@ public class KafkaProducerConfig {
     @Value("${producer.retry.backoff.ms}")
     private int retryBackoffMs;
 
+    @Value("${producer.delivery.timeout")
+    private int deliveryTimeout;
+
     @Bean
     public ProducerFactory<String, String> producerFactory() {
         Map<String, Object> properties = kafkaProperties.buildProducerProperties();
@@ -53,8 +56,15 @@ public class KafkaProducerConfig {
         properties.put(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, true);
         properties.put(ProducerConfig.ACKS_CONFIG, ack);
         /*Pelo que entendi, esses retries são para casos em que o ACK não foi correspondido*/
-        properties.put(ProducerConfig.RETRIES_CONFIG, retry);
-        properties.put(ProducerConfig.RETRY_BACKOFF_MS_CONFIG, retryBackoffMs);
+        //properties.put(ProducerConfig.RETRIES_CONFIG, retry);
+        //properties.put(ProducerConfig.RETRY_BACKOFF_MS_CONFIG, retryBackoffMs);
+        /* Delivery timeout - Tempo máximo que um producer irá gastar tentando enviar uma mensagem.
+           Isso inclui o tempo de envio da solicitação, tempo em que espera pelo ACK de todas as in sync replicas
+           e o tempo em que gasta tentando novamente a operação.
+           Delivery timeout é aconselhado a ser utilizado ao invés de retry + retry.backoff.ms
+           Deve ter um valor maior que a soma de linger.ms e request.timeout.ms
+        */
+        properties.put(ProducerConfig.DELIVERY_TIMEOUT_MS_CONFIG, deliveryTimeout);
         return new DefaultKafkaProducerFactory(properties);
     }
 
