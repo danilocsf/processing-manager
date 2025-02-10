@@ -44,6 +44,9 @@ public class KafkaProducerConfig {
     @Value("${producer.delivery.timeout")
     private int deliveryTimeout;
 
+    @Value("${producer.max.inflight.request.per.connection}")
+    private int maxInflightRequests;
+
     @Bean
     public ProducerFactory<String, String> producerFactory() {
         Map<String, Object> properties = kafkaProperties.buildProducerProperties();
@@ -53,8 +56,10 @@ public class KafkaProducerConfig {
         properties.put(ProducerConfig.BATCH_SIZE_CONFIG, batchSize);
         properties.put(ProducerConfig.LINGER_MS_CONFIG, lingerMs);
         properties.put(ProducerConfig.TRANSACTIONAL_ID_CONFIG, transactionalIdPrefix);
+        //Para que a indepotencia funcione, ack deve ser all e max.in.flight.requests.per.connection <= 5
         properties.put(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, true);
         properties.put(ProducerConfig.ACKS_CONFIG, ack);
+        properties.put(ProducerConfig.MAX_IN_FLIGHT_REQUESTS_PER_CONNECTION, maxInflightRequests);
         /*Pelo que entendi, esses retries são para casos em que o ACK não foi correspondido*/
         //properties.put(ProducerConfig.RETRIES_CONFIG, retry);
         //properties.put(ProducerConfig.RETRY_BACKOFF_MS_CONFIG, retryBackoffMs);
