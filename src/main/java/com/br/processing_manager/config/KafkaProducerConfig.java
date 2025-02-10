@@ -35,6 +35,12 @@ public class KafkaProducerConfig {
     @Value("${producer.ack}")
     private String ack;
 
+    @Value("${producer.retries}")
+    private int retry;
+
+    @Value("${producer.retry.backoff.ms}")
+    private int retryBackoffMs;
+
     @Bean
     public ProducerFactory<String, String> producerFactory() {
         Map<String, Object> properties = kafkaProperties.buildProducerProperties();
@@ -46,6 +52,9 @@ public class KafkaProducerConfig {
         properties.put(ProducerConfig.TRANSACTIONAL_ID_CONFIG, transactionalIdPrefix);
         properties.put(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, true);
         properties.put(ProducerConfig.ACKS_CONFIG, ack);
+        /*Pelo que entendi, esses retries são para casos em que o ACK não foi correspondido*/
+        properties.put(ProducerConfig.RETRIES_CONFIG, retry);
+        properties.put(ProducerConfig.RETRY_BACKOFF_MS_CONFIG, retryBackoffMs);
         return new DefaultKafkaProducerFactory(properties);
     }
 
